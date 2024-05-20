@@ -76,10 +76,6 @@ struct ContentView: View {
                 }
                 .padding(.horizontal)
                 
-                TextField("Life Change", text: $lifeChange)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.numberPad)
-                    .padding()
             }
             .navigationBarTitle("Life Counter")
         }
