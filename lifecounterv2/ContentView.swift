@@ -1,8 +1,9 @@
-//
-//  ContentView.swift
-//  lifecounterv2
-//
-//  Created by Sachin Dhami
+//////
+//////  ContentView.swift
+//////  lifecounterv2
+//////
+//////  Created by Sachin Dhami
+
 import SwiftUI
 
 struct ContentView: View {
@@ -15,12 +16,34 @@ struct ContentView: View {
     @State private var gameStarted = false
     @State private var showHistory = false
     @State private var history: [String] = []
-    @State private var lifeChange: String = ""
     @State private var playerLifeChanged = false
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 10) {
+            VStack(spacing: 20) {
+                ZStack {
+                    Text("Life Counter")
+                        .font(.largeTitle)
+                        .bold()
+                    
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showHistory.toggle()
+                        }) {
+                            VStack {
+                                Image(systemName: "list.bullet")
+                                Text("History")
+                            }
+                        }
+                        .sheet(isPresented: $showHistory, content: {
+                            HistoryView(history: $history)
+                        })
+                        .padding(.trailing)
+                    }
+                }
+                .padding(.top)
+                
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                         ForEach(players.indices, id: \.self) { index in
@@ -31,11 +54,15 @@ struct ContentView: View {
                 }
                 
                 HStack {
+                    Spacer()
+                    
                     Button(action: {
                         addPlayer()
                     }) {
-                        Image(systemName: "plus.circle.fill")
-                        Text("Add Player")
+                        VStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Add Player")
+                        }
                     }
                     .disabled(players.count >= 8 || gameStarted || playerLifeChanged)
                     
@@ -44,8 +71,10 @@ struct ContentView: View {
                     Button(action: {
                         removePlayer()
                     }) {
-                        Image(systemName: "minus.circle.fill")
-                        Text("Remove Player")
+                        VStack {
+                            Image(systemName: "minus.circle.fill")
+                            Text("Remove Player")
+                        }
                     }
                     .disabled(players.count <= 2 || gameStarted || playerLifeChanged)
                     
@@ -54,30 +83,18 @@ struct ContentView: View {
                     Button(action: {
                         resetGame()
                     }) {
-                        Image(systemName: "arrow.counterclockwise.circle.fill")
-                        Text("Reset")
+                        VStack {
+                            Image(systemName: "arrow.counterclockwise.circle.fill")
+                            Text("Reset")
+                        }
                     }
-                    Spacer()
-                }
-                .padding(.horizontal)
-                
-                HStack {
-                    Button(action: {
-                        showHistory.toggle()
-                    }) {
-                        Image(systemName: "list.bullet")
-                        Text("History")
-                    }
-                    .sheet(isPresented: $showHistory, content: {
-                        HistoryView(history: $history)
-                    })
                     
                     Spacer()
                 }
                 .padding(.horizontal)
                 
+                Spacer()
             }
-            .navigationBarTitle("Life Counter")
         }
     }
     
@@ -112,11 +129,12 @@ struct PlayerView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            Text(player.name)
+            Text(player.lifeTotal > 0 ? player.name : "\(player.name) loses!")
                 .font(.title3)
+                .foregroundColor(player.lifeTotal > 0 ? .primary : .white)
             Text("Life Total: \(player.lifeTotal)")
                 .font(.headline)
-                .foregroundColor(player.lifeTotal <= 0 ? .red : .primary)
+                .foregroundColor(player.lifeTotal <= 0 ? .white : .primary)
             HStack(spacing: 20) {
                 Button(action: {
                     modifyLife(by: 1)
@@ -145,7 +163,7 @@ struct PlayerView: View {
             }
         }
         .padding(8)
-        .background(Color.gray.opacity(0.2))
+        .background(player.lifeTotal <= 0 ? Color.red : Color.gray.opacity(0.2))
         .cornerRadius(10)
     }
     
@@ -187,10 +205,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-
-
-
-
-
-
